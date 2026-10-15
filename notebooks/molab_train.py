@@ -116,7 +116,7 @@ def _(mo):
 def _():
     # --- edit, run this cell, then run the next one --------------------------
     BRANCH = "main"
-    REPO_URL = "https://github.com/LampLighterLab/BigRedGym.git"
+    REPO_URL = "https://github.com/utkudotdev/BigRedGym.git"
     return BRANCH, REPO_URL
 
 
