@@ -192,7 +192,8 @@ class LeggedRobot(BaseTask):
 
     def _resample_commands(self, command_mask):
         """Randomly sample commands for selected environments."""
-        candidate = torch.empty_like(self.commands)
+        # Preserve any task-specific command columns sampled by subclasses.
+        candidate = self.commands.clone()
         candidate[:, 0] = torch_rand_float(
             self.command_ranges["lin_vel_x"][0],
             self.command_ranges["lin_vel_x"][1],

@@ -13,6 +13,9 @@ class Go2Trot(LeggedRobot):
     def _init_buffers(self):
         super()._init_buffers()
 
+        self.commands = torch.zeros(
+            self.num_envs, 4, dtype=torch.float, device=self.device
+        )
         self._actuated_dof_pos_limits = self.dof_pos_limits.index_select(
             0, self.actuated_dof_indices
         )
@@ -117,6 +120,14 @@ class Go2Trot(LeggedRobot):
     def _resample_commands(self, command_mask):
         super()._resample_commands(command_mask)
 
+        height = torch_rand_float(
+            self.command_ranges["base_height"][0],
+            self.command_ranges["base_height"][1],
+            (self.num_envs,),
+            device=self.device,
+        )
+        masked_update(self.commands[:, 3], height, command_mask)
+
         forward_commands = torch.tensor(
             self.command_ranges["lin_vel_x"], device=self.device
         )
@@ -135,7 +146,7 @@ class Go2Trot(LeggedRobot):
             drop = command_mask.unsqueeze(1) & (
                 torch.rand(self.num_envs, 1, device=self.device) >= 0.8
             )
-            self.commands[:, 1:].masked_fill_(drop, 0.0)
+            self.commands[:, 1:3].masked_fill_(drop, 0.0)
             drop = command_mask.unsqueeze(1) & (
                 torch.rand(self.num_envs, 1, device=self.device) >= 0.8
             )
@@ -143,7 +154,7 @@ class Go2Trot(LeggedRobot):
             drop = command_mask.unsqueeze(1) & (
                 torch.rand(self.num_envs, 1, device=self.device) >= 0.9
             )
-            self.commands.masked_fill_(drop, 0.0)
+            self.commands[:, :3].masked_fill_(drop, 0.0)
 
     def _reset_idx(self, reset_mask):
         super()._reset_idx(reset_mask)
@@ -218,11 +229,10 @@ class Go2Trot(LeggedRobot):
         )
         return torch.sum(torch.exp(-error), dim=1)
 
-    def _reward_min_base_height(self):
+    def _reward_tracking_height(self):
         """Squared exponential saturating at base_height target"""
-        error = self.base_height - self.cfg.reward_settings.base_height_target
+        error = self.commands[:, 3] - self.base_height.flatten()
         error /= self.scales["base_height"]
-        error = torch.clamp(error, max=0, min=None).flatten()
         return self._sqrdexp(error)
 
     def _reward_tracking_lin_vel(self):

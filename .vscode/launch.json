@@ -20,6 +20,25 @@
             ],
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Play Go2 (viewer)",
+            "type": "debugpy",
+            "request": "launch",
+            "python": "${workspaceFolder}/.venv/bin/python",
+            "osx": {
+                "python": "${workspaceFolder}/.venv/bin/mjpython"
+            },
+            "windows": {
+                "python": "${workspaceFolder}/.venv/Scripts/python.exe"
+            },
+            "program": "${workspaceFolder}/scripts/play.py",
+            "args": [
+                "--task=go2trot",
+                "--keyboard"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
         }
     ]
 }
