@@ -83,7 +83,7 @@ class TeleopCommands:
         self.min_height = 0.1
 
         env.commands[:] = 0.0
-        env.commands[:, 0] = 1.0  # seed forward velocity so motion is visible
+        # env.commands[:, 0] = 1.0  # seed forward velocity so motion is visible
         env.commands[:, 3] = (self.max_height + self.min_height) / 2  # stand at average
         if hasattr(env.cfg, "commands"):
             env.cfg.commands.resampling_time = env.max_episode_length_s + 1
