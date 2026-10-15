@@ -87,6 +87,7 @@ class Go2Trot(LeggedRobot):
         )
 
     def _compute_torques(self):
+        # print(self.base_height, self.commands[:, 3])
         pos = self.dof_pos.index_select(1, self.actuated_dof_indices)
         vel = self.dof_vel.index_select(1, self.actuated_dof_indices)
         default_pos = self.default_dof_pos.index_select(1, self.actuated_dof_indices)
