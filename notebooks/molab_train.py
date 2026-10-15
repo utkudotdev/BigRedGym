@@ -115,7 +115,7 @@ def _(mo):
 @app.cell
 def _():
     # --- edit, run this cell, then run the next one --------------------------
-    BRANCH = "main"
+    BRANCH = "dev"
     REPO_URL = "https://github.com/utkudotdev/BigRedGym.git"
     return BRANCH, REPO_URL
 
