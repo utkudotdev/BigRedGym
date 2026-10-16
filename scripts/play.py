@@ -18,7 +18,7 @@ from gym.utils.helpers import set_seed
 from gym.utils.task_registry import task_registry
 
 
-def get_play_args(argv=None):
+def get_play_parser():
     parser = argparse.ArgumentParser(description="Play a policy trained with Q2")
     parser.add_argument("--task", type=str, required=True)
     parser.add_argument("--device", type=str, default="cpu")
@@ -72,10 +72,14 @@ def get_play_args(argv=None):
         "gym/utils/interfaces/MujocoKeyboardInterface.py for key bindings). "
         "Use --no-keyboard to disable.",
     )
-    return parser.parse_args(argv)
+    return parser
 
 
-def setup(args):
+def get_play_args(argv=None):
+    return get_play_parser().parse_args(argv)
+
+
+def setup(args, *, reset_mode="reset_to_basic", episode_length_s=50):
     # Register tasks (imports the task classes).
     import gym.envs  # noqa: F401
 
@@ -88,12 +92,12 @@ def setup(args):
 
     # Play-time overrides — small batch, long episodes, no pushes.
     env_cfg.env.num_envs = args.num_envs
-    env_cfg.env.episode_length_s = 50
+    env_cfg.env.episode_length_s = episode_length_s
     if hasattr(env_cfg, "commands"):
         env_cfg.commands.resampling_time = 9999
     if hasattr(env_cfg, "push_robots"):
         env_cfg.push_robots.toggle = False
-    env_cfg.init_state.reset_mode = "reset_to_basic"
+    env_cfg.init_state.reset_mode = reset_mode
     if hasattr(env_cfg, "viewer"):
         env_cfg.viewer.show_ui = args.viewer_ui
 
